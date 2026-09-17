@@ -20,6 +20,8 @@
     --accent-soft: #fdece1;
     --stiff: #2451a8;
     --stiff-soft: #e7eefc;
+    --naive: #6d28d9;
+    --naive-soft: #efe9fd;
   }
 
   * { box-sizing: border-box; }
@@ -205,55 +207,33 @@
 
   .band { background: var(--panel); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 
-  /* ---------- Method cards ---------- */
-  .method-grid {
+  /* ---------- Method figures ---------- */
+  .method-fig {
     max-width: 1180px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 22px;
+    margin: 0 auto 44px;
   }
 
-  .method-card {
-    background: var(--bg);
+  .method-fig:last-child { margin-bottom: 0; }
+
+  .method-fig img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 14px;
     border: 1px solid var(--line);
-    border-radius: 16px;
-    padding: 30px 26px;
+    background: #fff;
   }
 
-  .method-card .glyph {
-    width: 46px; height: 46px;
-    border-radius: 12px;
-    background: var(--accent-soft);
-    color: var(--accent-ink);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px;
-    margin-bottom: 18px;
-  }
-
-  .method-card h3 {
-    font-size: 19px;
-    font-weight: 600;
-    margin: 0 0 8px;
-    letter-spacing: -0.005em;
-  }
-
-  .method-card p {
-    font-size: 15px;
-    line-height: 1.6;
+  .method-fig figcaption {
+    font-size: 14.5px;
+    line-height: 1.55;
     color: var(--ink-soft);
-    margin: 0;
+    text-align: center;
+    max-width: 820px;
+    margin: 16px auto 0;
   }
 
-  .method-card .tag {
-    display: inline-block;
-    margin-top: 14px;
-    font-size: 12.5px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--ink-faint);
-  }
+  .method-fig figcaption b { color: var(--ink); }
 
   /* ---------- Task groups ---------- */
   .task-block { margin-bottom: 58px; }
@@ -272,6 +252,15 @@
     font-weight: 700;
     margin: 0;
     letter-spacing: -0.005em;
+  }
+
+  .task-head .task-sub {
+    margin-top: 5px;
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
   }
 
   .task-head .task-note {
@@ -311,6 +300,7 @@
   }
 
   .tab-btn[data-variant="stiff"] .dot { background: var(--stiff); }
+  .tab-btn[data-variant="naive"] .dot { background: var(--naive); }
 
   .tab-btn.is-active {
     background: var(--ink);
@@ -341,6 +331,17 @@
     background: #d8d6d0;
     border-radius: 8px;
   }
+
+  /* A few clips side by side in equal columns, filling the row (no scrolling) */
+  .row-fill {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    gap: 20px;
+    padding: 10px 4px;
+  }
+
+  .row-fill .card { width: auto; }
 
   .row-arrow {
     position: absolute;
@@ -444,6 +445,85 @@
 
   .card.is-hovered .mute-hint { opacity: 1; }
 
+  /* ---------- Scrubbable timeline ---------- */
+  /* A thin progress line sits at the bottom of every clip. The hit zone is
+     taller than the line so it is easy to grab; hover to preview a time,
+     click or drag to seek, arrow keys nudge when focused. */
+  .scrub {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 20px;
+    cursor: ew-resize;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    outline: none;
+  }
+
+  .scrub-track {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.3);
+    transition: height 0.15s ease;
+  }
+
+  .scrub-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    background: var(--accent);
+  }
+
+  .scrub-knob {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9);
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 0.15s ease;
+  }
+
+  .scrub-time {
+    position: absolute;
+    bottom: 22px;
+    left: 0;
+    transform: translateX(-50%);
+    padding: 3px 7px;
+    border-radius: 6px;
+    background: rgba(10, 10, 12, 0.8);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+
+  .video-wrap:hover .scrub-track,
+  .scrub:focus-visible .scrub-track,
+  .scrub.is-scrubbing .scrub-track { height: 6px; }
+
+  .video-wrap:hover .scrub-knob,
+  .scrub:focus-visible .scrub-knob,
+  .scrub.is-scrubbing .scrub-knob { transform: translate(-50%, -50%) scale(1); }
+
+  .scrub:hover .scrub-time,
+  .scrub:focus-visible .scrub-time,
+  .scrub.is-scrubbing .scrub-time { opacity: 1; }
+
   .card .label {
     padding: 10px 13px;
     font-size: 13px;
@@ -468,6 +548,7 @@
 
   .badge.compliant { background: var(--accent-soft); color: var(--accent-ink); }
   .badge.stiff { background: var(--stiff-soft); color: var(--stiff); }
+  .badge.naive { background: var(--naive-soft); color: var(--naive); }
 
   /* Teaser reuses .card for hover/audio behavior but needs full width, not the row card width */
   .teaser-wrap .card {
@@ -494,16 +575,14 @@
   footer p { margin: 6px 0; }
 
   /* ---------- Responsive ---------- */
-  @media (max-width: 1020px) {
-    .method-grid { grid-template-columns: 1fr; }
-  }
-
   @media (max-width: 640px) {
     h1.title { font-size: 42px; }
     .tagline { font-size: 19px; }
     h2.section-title { font-size: 28px; }
+    .task-head { flex-wrap: wrap; gap: 4px 16px; }
     header.hero { padding: 56px 20px 16px; }
     .card { width: 280px; }
+    .row-fill { grid-auto-flow: row; grid-auto-columns: auto; }
     nav.top .links { gap: 16px; font-size: 13px; }
   }
 </style>
@@ -539,36 +618,26 @@
       <div class="mute-hint">&#128264;</div>
     </div>
   </div>
-  <p class="teaser-caption"><b>Autonomous policy rollout.</b> A visuomotor policy trained entirely on demonstrations collected through our task-frame compliant teleoperation system &mdash; hover to unmute.</p>
+  <p class="teaser-caption"><b>Autonomous policy rollout.</b> A visuomotor policy trained entirely on demonstrations collected through our force-modulated teleoperation system &mdash; hover to unmute.</p>
 </div>
 
 <section id="method" class="band">
   <div class="wrap">
     <div class="section-head">
       <div class="kicker">Method</div>
-      <h2 class="section-title">Compliance, decomposed by direction</h2>
-      <p class="section-sub">A task-frame splits contact force into task-relevant directions. Each direction gets its own correction law, so the robot yields where it should and stays precise everywhere else.</p>
+      <h2 class="section-title">Force Modulation of Nominal Actions</h2>
+      <p class="section-sub">The operator&rsquo;s command is a nominal action. Force feedback rewrites only its contact-relevant components, in coordinates set by task geometry and contact structure.</p>
     </div>
-    <div class="method-grid">
-      <div class="method-card">
-        <div class="glyph">&#9660;</div>
-        <h3>Surface Contact Retreat</h3>
-        <p>When a fingertip presses too hard on a supporting surface, the finger retreats proportional to the excess force &mdash; protecting the object and the grasp.</p>
-        <span class="tag">Card Pickup</span>
-      </div>
-      <div class="method-card">
-        <div class="glyph">&#8596;</div>
-        <h3>Directional Tool Compliance</h3>
-        <p>A mass&ndash;spring&ndash;damper law absorbs sideways force on a moving tool while preserving motion along its intended axis.</p>
-        <span class="tag">Screwdriver</span>
-      </div>
-      <div class="method-card">
-        <div class="glyph">&#8635;</div>
-        <h3>Rotational Force Regulation</h3>
-        <p>A PI loop holds fingertip normal force near a target during screwdriving, keeping a stable grasp around the rotation axis.</p>
-        <span class="tag">Screwdriver</span>
-      </div>
-    </div>
+
+    <figure class="method-fig">
+      <img src="assets/fig_system.png" alt="System overview: a Sharpa glove with Vive tracker produces the human action; the FOMO controller modulates it using force sensing before sending the robot action to a Tianji arm with a Sharpa Wave hand equipped with wrist F/T, finger torque and fingertip tactile sensing.">
+      <figcaption><b>System.</b> A teleoperator or learned policy provides the nominal action; wrist force-torque, fingertip tactile and joint-torque sensing modulate it before execution on the arm and hand.</figcaption>
+    </figure>
+
+    <figure class="method-fig">
+      <img src="assets/fig_controller.png" alt="FOMO-Dex controller: (a) task-frame directions for unilateral load relief, translational tool compliance and multi-contact force regulation; (b) force error calculation with bilateral and unilateral errors; (c) direction-wise admittance mapped to arm Cartesian offsets or finger-joint corrections.">
+      <figcaption><b>Controller.</b> Task geometry defines interaction directions; force errors along them drive direction-wise admittance, yielding arm/finger corrections for unilateral load relief, translational tool compliance and multi-contact force regulation.</figcaption>
+    </figure>
   </div>
 </section>
 
@@ -577,33 +646,103 @@
     <div class="section-head">
       <div class="kicker">Results &middot; Human-in-the-loop</div>
       <h2 class="section-title">Teleoperated Demonstrations</h2>
-      <p class="section-sub">Compliant vs. stiff task-frame settings, teleoperated on the same hardware. Compliance yields smoother contact and fewer failed grasps. Hover a clip to hear it.</p>
+      <p class="section-sub">FOMO-Dex, naive compliance and stiff control, teleoperated on the same hardware. Task-frame force modulation yields smoother contact and fewer failed grasps. Hover a clip to hear it.</p>
     </div>
 
     <div class="task-block">
       <div class="task-head">
         <h3>Card Pickup</h3>
-        <span class="task-note">Surface contact retreat &middot; 4 clips</span>
+        <span class="task-note">Unilateral Load Relief</span>
       </div>
-      <div class="row-viewport">
-        <button class="row-arrow row-arrow--prev" aria-label="Scroll left">&#8249;</button>
-        <div class="row-scroll">
-          <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/card_comp_1.jpg" data-src="videos_web/card_comp_1.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Take 1</b><span class="badge compliant">Compliant</span></div></div>
-          <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/card_comp_2.jpg" data-src="videos_web/card_comp_2.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Take 2</b><span class="badge compliant">Compliant</span></div></div>
-          <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/card_comp_3.jpg" data-src="videos_web/card_comp_3.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Take 3</b><span class="badge compliant">Compliant</span></div></div>
-          <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/card_comp_4.jpg" data-src="videos_web/card_comp_4.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Take 4</b><span class="badge compliant">Compliant</span></div></div>
+      <div class="tabs" data-tabgroup="cardpick-teleop">
+        <button class="tab-btn is-active" data-variant="compliant"><span class="dot"></span>FOMO-Dex</button>
+        <button class="tab-btn" data-variant="naive"><span class="dot"></span>Naive Compliant</button>
+        <button class="tab-btn" data-variant="stiff"><span class="dot"></span>Stiff</button>
+      </div>
+
+      <div class="tab-panel is-active" data-tabgroup="cardpick-teleop" data-variant="compliant">
+        <div class="row-viewport">
+          <button class="row-arrow row-arrow--prev" aria-label="Scroll left">&#8249;</button>
+          <div class="row-scroll">
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/card_comp_1.jpg" data-src="videos_web/card_comp_1.mp4"></video></div><div class="label"><span class="badge compliant">FOMO-Dex</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/card_comp_2.jpg" data-src="videos_web/card_comp_2.mp4"></video></div><div class="label"><span class="badge compliant">FOMO-Dex</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/card_comp_3.jpg" data-src="videos_web/card_comp_3.mp4"></video></div><div class="label"><span class="badge compliant">FOMO-Dex</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/card_comp_4.jpg" data-src="videos_web/card_comp_4.mp4"></video></div><div class="label"><span class="badge compliant">FOMO-Dex</span></div></div>
+          </div>
+          <button class="row-arrow row-arrow--next" aria-label="Scroll right">&#8250;</button>
         </div>
-        <button class="row-arrow row-arrow--next" aria-label="Scroll right">&#8250;</button>
+      </div>
+
+      <div class="tab-panel" data-tabgroup="cardpick-teleop" data-variant="naive">
+        <div class="row-viewport">
+          <button class="row-arrow row-arrow--prev" aria-label="Scroll left">&#8249;</button>
+          <div class="row-scroll">
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/card_naive_1.jpg" data-src="videos_web/card_naive_1.mp4"></video></div><div class="label"><span class="badge naive">Naive Compliant</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/card_naive_2.jpg" data-src="videos_web/card_naive_2.mp4"></video></div><div class="label"><span class="badge naive">Naive Compliant</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/card_naive_3.jpg" data-src="videos_web/card_naive_3.mp4"></video></div><div class="label"><span class="badge naive">Naive Compliant</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/card_naive_4.jpg" data-src="videos_web/card_naive_4.mp4"></video></div><div class="label"><span class="badge naive">Naive Compliant</span></div></div>
+          </div>
+          <button class="row-arrow row-arrow--next" aria-label="Scroll right">&#8250;</button>
+        </div>
+      </div>
+
+      <div class="tab-panel" data-tabgroup="cardpick-teleop" data-variant="stiff">
+        <div class="row-viewport">
+          <button class="row-arrow row-arrow--prev" aria-label="Scroll left">&#8249;</button>
+          <div class="row-scroll">
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/card_stiff_1.jpg" data-src="videos_web/card_stiff_1.mp4"></video></div><div class="label"><span class="badge stiff">Stiff</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/card_stiff_2.jpg" data-src="videos_web/card_stiff_2.mp4"></video></div><div class="label"><span class="badge stiff">Stiff</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/card_stiff_3.jpg" data-src="videos_web/card_stiff_3.mp4"></video></div><div class="label"><span class="badge stiff">Stiff</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/card_stiff_4.jpg" data-src="videos_web/card_stiff_4.mp4"></video></div><div class="label"><span class="badge stiff">Stiff</span></div></div>
+          </div>
+          <button class="row-arrow row-arrow--next" aria-label="Scroll right">&#8250;</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="task-block">
+      <div class="task-head">
+        <h3>Chip Pickup</h3>
+        <span class="task-note">Unilateral Load Relief</span>
+      </div>
+      <div class="row-fill">
+        <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/card_chip_comp.jpg" data-src="videos_web/card_chip_comp.mp4"></video></div><div class="label"><span class="badge compliant">FOMO-Dex</span></div></div>
+        <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/card_chip_stiff.jpg" data-src="videos_web/card_chip_stiff.mp4"></video></div><div class="label"><span class="badge stiff">Stiff</span></div></div>
+      </div>
+    </div>
+
+    <div class="task-block">
+      <div class="task-head">
+        <h3>Paper Cutting</h3>
+        <span class="task-note">Translational Tool Compliance</span>
+      </div>
+      <div class="row-fill">
+        <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/paper_comp.jpg" data-src="videos_web/paper_comp.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><span class="badge compliant">FOMO-Dex</span></div></div>
+        <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/paper_naive.jpg" data-src="videos_web/paper_naive.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><span class="badge naive">Naive Compliant</span></div></div>
+        <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/paper_stiff.jpg" data-src="videos_web/paper_stiff.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><span class="badge stiff">Stiff</span></div></div>
+      </div>
+    </div>
+
+    <div class="task-block">
+      <div class="task-head">
+        <h3>Bolt&ndash;Nut</h3>
+        <span class="task-note">Multi-Contact Force Regulation</span>
+      </div>
+      <div class="row-fill">
+        <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/boltnut_comp.jpg" data-src="videos_web/boltnut_comp.mp4"></video></div><div class="label"><span class="badge compliant">FOMO-Dex</span></div></div>
+        <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/boltnut_naive.jpg" data-src="videos_web/boltnut_naive.mp4"></video></div><div class="label"><span class="badge naive">Naive Compliant</span></div></div>
+        <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/boltnut_stiff.jpg" data-src="videos_web/boltnut_stiff.mp4"></video></div><div class="label"><span class="badge stiff">Stiff</span></div></div>
       </div>
     </div>
 
     <div class="task-block">
       <div class="task-head">
         <h3>Screwdriver</h3>
-        <span class="task-note">Directional + rotational compliance &middot; 17 clips</span>
+        <span class="task-note">Multi-Contact Force Regulation</span>
       </div>
       <div class="tabs" data-tabgroup="screwdriver-teleop">
-        <button class="tab-btn is-active" data-variant="compliant"><span class="dot"></span>Compliant</button>
+        <button class="tab-btn is-active" data-variant="compliant"><span class="dot"></span>FOMO-Dex</button>
+        <button class="tab-btn" data-variant="naive"><span class="dot"></span>Naive Compliant</button>
         <button class="tab-btn" data-variant="stiff"><span class="dot"></span>Stiff</button>
       </div>
 
@@ -611,14 +750,28 @@
         <div class="row-viewport">
           <button class="row-arrow row-arrow--prev" aria-label="Scroll left">&#8249;</button>
           <div class="row-scroll">
-            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_comp_1_1.jpg" data-src="videos_web/screw_comp_1_1.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Config 1</b><span>Take 1</span></div></div>
-            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_comp_1_2.jpg" data-src="videos_web/screw_comp_1_2.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Config 1</b><span>Take 2</span></div></div>
-            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_comp_1_3.jpg" data-src="videos_web/screw_comp_1_3.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Config 1</b><span>Take 3</span></div></div>
-            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_comp_1_4.jpg" data-src="videos_web/screw_comp_1_4.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Config 1</b><span>Take 4</span></div></div>
-            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_comp_1_5.jpg" data-src="videos_web/screw_comp_1_5.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Config 1</b><span>Take 5</span></div></div>
-            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_comp_2.jpg" data-src="videos_web/screw_comp_2.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Config 2</b></div></div>
-            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_comp_3.jpg" data-src="videos_web/screw_comp_3.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Config 3</b></div></div>
-            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_comp_4.jpg" data-src="videos_web/screw_comp_4.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Config 4</b></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_comp_1_1.jpg" data-src="videos_web/screw_comp_1_1.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Screwdriver A</b><span class="badge compliant">FOMO-Dex</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_comp_1_2.jpg" data-src="videos_web/screw_comp_1_2.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Screwdriver A</b><span class="badge compliant">FOMO-Dex</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_comp_1_3.jpg" data-src="videos_web/screw_comp_1_3.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Screwdriver A</b><span class="badge compliant">FOMO-Dex</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_comp_1_4.jpg" data-src="videos_web/screw_comp_1_4.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Screwdriver A</b><span class="badge compliant">FOMO-Dex</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_comp_1_5.jpg" data-src="videos_web/screw_comp_1_5.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Screwdriver A</b><span class="badge compliant">FOMO-Dex</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_comp_2.jpg" data-src="videos_web/screw_comp_2.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Screwdriver B</b><span class="badge compliant">FOMO-Dex</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_comp_3.jpg" data-src="videos_web/screw_comp_3.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Screwdriver C</b><span class="badge compliant">FOMO-Dex</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_comp_4.jpg" data-src="videos_web/screw_comp_4.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Screwdriver D</b><span class="badge compliant">FOMO-Dex</span></div></div>
+          </div>
+          <button class="row-arrow row-arrow--next" aria-label="Scroll right">&#8250;</button>
+        </div>
+      </div>
+
+      <div class="tab-panel" data-tabgroup="screwdriver-teleop" data-variant="naive">
+        <div class="row-viewport">
+          <button class="row-arrow row-arrow--prev" aria-label="Scroll left">&#8249;</button>
+          <div class="row-scroll">
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_naive_1.jpg" data-src="videos_web/screw_naive_1.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><span class="badge naive">Naive Compliant</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_naive_2.jpg" data-src="videos_web/screw_naive_2.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><span class="badge naive">Naive Compliant</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_naive_3.jpg" data-src="videos_web/screw_naive_3.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><span class="badge naive">Naive Compliant</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_naive_4.jpg" data-src="videos_web/screw_naive_4.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><span class="badge naive">Naive Compliant</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_naive_5.jpg" data-src="videos_web/screw_naive_5.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><span class="badge naive">Naive Compliant</span></div></div>
           </div>
           <button class="row-arrow row-arrow--next" aria-label="Scroll right">&#8250;</button>
         </div>
@@ -628,15 +781,15 @@
         <div class="row-viewport">
           <button class="row-arrow row-arrow--prev" aria-label="Scroll left">&#8249;</button>
           <div class="row-scroll">
-            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_stiff_1_1.jpg" data-src="videos_web/screw_stiff_1_1.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Config 1</b><span>Take 1</span></div></div>
-            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_stiff_1_2.jpg" data-src="videos_web/screw_stiff_1_2.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Config 1</b><span>Take 2</span></div></div>
-            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_stiff_1_3.jpg" data-src="videos_web/screw_stiff_1_3.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Config 1</b><span>Take 3</span></div></div>
-            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_stiff_2_1.jpg" data-src="videos_web/screw_stiff_2_1.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Config 2</b><span>Take 1</span></div></div>
-            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_stiff_2_2.jpg" data-src="videos_web/screw_stiff_2_2.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Config 2</b><span>Take 2</span></div></div>
-            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_stiff_3_1.jpg" data-src="videos_web/screw_stiff_3_1.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Config 3</b><span>Take 1</span></div></div>
-            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_stiff_3_2.jpg" data-src="videos_web/screw_stiff_3_2.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Config 3</b><span>Take 2</span></div></div>
-            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_stiff_4_1.jpg" data-src="videos_web/screw_stiff_4_1.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Config 4</b><span>Take 1</span></div></div>
-            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_stiff_4_2.jpg" data-src="videos_web/screw_stiff_4_2.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Config 4</b><span>Take 2</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_stiff_1_1.jpg" data-src="videos_web/screw_stiff_1_1.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Screwdriver A</b><span class="badge stiff">Stiff</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_stiff_1_2.jpg" data-src="videos_web/screw_stiff_1_2.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Screwdriver A</b><span class="badge stiff">Stiff</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_stiff_1_3.jpg" data-src="videos_web/screw_stiff_1_3.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Screwdriver A</b><span class="badge stiff">Stiff</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_stiff_2_1.jpg" data-src="videos_web/screw_stiff_2_1.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Screwdriver B</b><span class="badge stiff">Stiff</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_stiff_2_2.jpg" data-src="videos_web/screw_stiff_2_2.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Screwdriver B</b><span class="badge stiff">Stiff</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_stiff_3_1.jpg" data-src="videos_web/screw_stiff_3_1.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Screwdriver C</b><span class="badge stiff">Stiff</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_stiff_3_2.jpg" data-src="videos_web/screw_stiff_3_2.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Screwdriver C</b><span class="badge stiff">Stiff</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_stiff_4_1.jpg" data-src="videos_web/screw_stiff_4_1.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Screwdriver D</b><span class="badge stiff">Stiff</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/screw_stiff_4_2.jpg" data-src="videos_web/screw_stiff_4_2.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Screwdriver D</b><span class="badge stiff">Stiff</span></div></div>
           </div>
           <button class="row-arrow row-arrow--next" aria-label="Scroll right">&#8250;</button>
         </div>
@@ -655,27 +808,90 @@
 
     <div class="task-block">
       <div class="task-head">
-        <h3>Screwdriver</h3>
-        <span class="task-note">BC rollouts &middot; 3 clips</span>
-      </div>
-      <div class="row-viewport">
-        <button class="row-arrow row-arrow--prev" aria-label="Scroll left">&#8249;</button>
-        <div class="row-scroll">
-          <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/bc_screw_comp_1.jpg" data-src="videos_web/bc_screw_comp_1.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Rollout 1</b><span class="badge compliant">Compliant</span></div></div>
-          <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/bc_screw_comp_2_zoomin.jpg" data-src="videos_web/bc_screw_comp_2_zoomin.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Rollout 2</b><span>Zoom&ndash;in</span></div></div>
-          <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/bc_screw_full_8x.jpg" data-src="videos_web/bc_screw_full_8x.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Full run</b><span>8&times; speed</span></div></div>
+        <div>
+          <h3>Card Pickup</h3>
+          <div class="task-sub">Autonomous, 1&times; Speed</div>
         </div>
-        <button class="row-arrow row-arrow--next" aria-label="Scroll right">&#8250;</button>
+        <span class="task-note">BC rollouts</span>
+      </div>
+      <div class="tabs" data-tabgroup="card-bc">
+        <button class="tab-btn is-active" data-variant="compliant"><span class="dot"></span>FOMO-Dex</button>
+        <button class="tab-btn" data-variant="stiff"><span class="dot"></span>Stiff</button>
+      </div>
+
+      <div class="tab-panel is-active" data-tabgroup="card-bc" data-variant="compliant">
+        <div class="row-viewport">
+          <button class="row-arrow row-arrow--prev" aria-label="Scroll left">&#8249;</button>
+          <div class="row-scroll">
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/bc_card_comp_1.jpg" data-src="videos_web/bc_card_comp_1.mp4"></video></div><div class="label"><span class="badge compliant">FOMO-Dex</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/bc_card_comp_2.jpg" data-src="videos_web/bc_card_comp_2.mp4"></video></div><div class="label"><span class="badge compliant">FOMO-Dex</span></div></div>
+          </div>
+          <button class="row-arrow row-arrow--next" aria-label="Scroll right">&#8250;</button>
+        </div>
+      </div>
+
+      <div class="tab-panel" data-tabgroup="card-bc" data-variant="stiff">
+        <div class="row-viewport">
+          <button class="row-arrow row-arrow--prev" aria-label="Scroll left">&#8249;</button>
+          <div class="row-scroll">
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/bc_card_stiff.jpg" data-src="videos_web/bc_card_stiff.mp4"></video></div><div class="label"><span class="badge stiff">Stiff</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/bc_card_stiff_1.jpg" data-src="videos_web/bc_card_stiff_1.mp4"></video></div><div class="label"><span class="badge stiff">Stiff</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/bc_card_stiff_3.jpg" data-src="videos_web/bc_card_stiff_3.mp4"></video></div><div class="label"><span class="badge stiff">Stiff</span></div></div>
+          </div>
+          <button class="row-arrow row-arrow--next" aria-label="Scroll right">&#8250;</button>
+        </div>
       </div>
     </div>
 
     <div class="task-block">
       <div class="task-head">
-        <h3>Big Screw</h3>
-        <span class="task-note">BC rollouts &middot; 5 clips</span>
+        <div>
+          <h3>Screwdriver</h3>
+          <div class="task-sub">Autonomous, 1&times; Speed</div>
+        </div>
+        <span class="task-note">BC rollouts</span>
+      </div>
+      <div class="tabs" data-tabgroup="screwdriver-bc">
+        <button class="tab-btn is-active" data-variant="compliant"><span class="dot"></span>FOMO-Dex</button>
+        <button class="tab-btn" data-variant="stiff"><span class="dot"></span>Stiff</button>
+      </div>
+
+      <div class="tab-panel is-active" data-tabgroup="screwdriver-bc" data-variant="compliant">
+        <div class="row-viewport">
+          <button class="row-arrow row-arrow--prev" aria-label="Scroll left">&#8249;</button>
+          <div class="row-scroll">
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/bc_screw_comp_2_zoomin.jpg" data-src="videos_web/bc_screw_comp_2_zoomin.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><span class="badge compliant">FOMO-Dex</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/teaser.jpg" data-src="videos_web/teaser.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><span class="badge compliant">FOMO-Dex</span></div></div>
+          </div>
+          <button class="row-arrow row-arrow--next" aria-label="Scroll right">&#8250;</button>
+        </div>
+      </div>
+
+      <div class="tab-panel" data-tabgroup="screwdriver-bc" data-variant="stiff">
+        <div class="row-viewport">
+          <button class="row-arrow row-arrow--prev" aria-label="Scroll left">&#8249;</button>
+          <div class="row-scroll">
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/bc_screw_stiff_5.jpg" data-src="videos_web/bc_screw_stiff_5.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><span class="badge stiff">Stiff</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/bc_screw_stiff_4.jpg" data-src="videos_web/bc_screw_stiff_4.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><span class="badge stiff">Stiff</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/bc_screw_stiff_3.jpg" data-src="videos_web/bc_screw_stiff_3.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><span class="badge stiff">Stiff</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/bc_screw_stiff_2.jpg" data-src="videos_web/bc_screw_stiff_2.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><span class="badge stiff">Stiff</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/bc_screw_stiff_1.jpg" data-src="videos_web/bc_screw_stiff_1.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><span class="badge stiff">Stiff</span></div></div>
+          </div>
+          <button class="row-arrow row-arrow--next" aria-label="Scroll right">&#8250;</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="task-block">
+      <div class="task-head">
+        <div>
+          <h3>Bolt-Nut</h3>
+          <div class="task-sub">Autonomous, 1&times; Speed</div>
+        </div>
+        <span class="task-note">BC rollouts</span>
       </div>
       <div class="tabs" data-tabgroup="bigscrew-bc">
-        <button class="tab-btn is-active" data-variant="compliant"><span class="dot"></span>Compliant</button>
+        <button class="tab-btn is-active" data-variant="compliant"><span class="dot"></span>FOMO-Dex</button>
         <button class="tab-btn" data-variant="stiff"><span class="dot"></span>Stiff</button>
       </div>
 
@@ -683,9 +899,9 @@
         <div class="row-viewport">
           <button class="row-arrow row-arrow--prev" aria-label="Scroll left">&#8249;</button>
           <div class="row-scroll">
-            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/bc_bigscrew_comp_1.jpg" data-src="videos_web/bc_bigscrew_comp_1.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Rollout 1</b></div></div>
-            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/bc_bigscrew_comp_2.jpg" data-src="videos_web/bc_bigscrew_comp_2.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Rollout 2</b></div></div>
-            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/bc_bigscrew_comp_3.jpg" data-src="videos_web/bc_bigscrew_comp_3.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Rollout 3</b><span>Longer horizon</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/bc_bigscrew_comp_1.jpg" data-src="videos_web/bc_bigscrew_comp_1.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><span class="badge compliant">FOMO-Dex</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/bc_bigscrew_comp_2.jpg" data-src="videos_web/bc_bigscrew_comp_2.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><span class="badge compliant">FOMO-Dex</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/bc_bigscrew_comp_3.jpg" data-src="videos_web/bc_bigscrew_comp_3.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><span class="badge compliant">FOMO-Dex</span></div></div>
           </div>
           <button class="row-arrow row-arrow--next" aria-label="Scroll right">&#8250;</button>
         </div>
@@ -695,8 +911,8 @@
         <div class="row-viewport">
           <button class="row-arrow row-arrow--prev" aria-label="Scroll left">&#8249;</button>
           <div class="row-scroll">
-            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/bc_bigscrew_stiff_1.jpg" data-src="videos_web/bc_bigscrew_stiff_1.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Rollout 1</b></div></div>
-            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/bc_bigscrew_stiff_2.jpg" data-src="videos_web/bc_bigscrew_stiff_2.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><b>Rollout 2</b></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/bc_bigscrew_stiff_1.jpg" data-src="videos_web/bc_bigscrew_stiff_1.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><span class="badge stiff">Stiff</span></div></div>
+            <div class="card"><div class="video-wrap"><video muted loop playsinline preload="none" poster="videos_web/posters/bc_bigscrew_stiff_2.jpg" data-src="videos_web/bc_bigscrew_stiff_2.mp4"></video><div class="mute-hint">&#128264;</div></div><div class="label"><span class="badge stiff">Stiff</span></div></div>
           </div>
           <button class="row-arrow row-arrow--next" aria-label="Scroll right">&#8250;</button>
         </div>
@@ -725,6 +941,129 @@
     });
   }, { threshold: 0.3 });
   videos.forEach((v) => io.observe(v));
+
+  // Scrubbable timeline on every clip. Built here rather than in the markup so
+  // the teaser and all cards get an identical control.
+  const fmtTime = (s) => {
+    if (!(s > 0)) s = 0;
+    return Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
+  };
+
+  document.querySelectorAll('.video-wrap').forEach((wrap) => {
+    const video = wrap.querySelector('video');
+    if (!video) return;
+
+    const scrub = document.createElement('div');
+    scrub.className = 'scrub';
+    scrub.tabIndex = 0;
+    scrub.setAttribute('role', 'slider');
+    scrub.setAttribute('aria-label', 'Video timeline');
+    scrub.setAttribute('aria-valuemin', '0');
+    scrub.setAttribute('aria-valuemax', '100');
+    scrub.innerHTML =
+      '<div class="scrub-track"><div class="scrub-fill"></div><div class="scrub-knob"></div></div>' +
+      '<div class="scrub-time"></div>';
+    wrap.appendChild(scrub);
+
+    const fill = scrub.querySelector('.scrub-fill');
+    const knob = scrub.querySelector('.scrub-knob');
+    const label = scrub.querySelector('.scrub-time');
+
+    let raf = null;
+    let dragging = false;
+    let pendingFrac = null; // seek requested before metadata arrived
+
+    const paint = (frac) => {
+      const pct = (frac * 100) + '%';
+      fill.style.width = pct;
+      knob.style.left = pct;
+      scrub.setAttribute('aria-valuenow', String(Math.round(frac * 100)));
+    };
+
+    const render = () => {
+      const d = video.duration;
+      paint(d > 0 ? video.currentTime / d : 0);
+    };
+
+    // Only animate while the clip is actually playing; seeks repaint directly.
+    const tick = () => { render(); raf = requestAnimationFrame(tick); };
+    video.addEventListener('play', () => { if (raf === null) raf = requestAnimationFrame(tick); });
+    video.addEventListener('pause', () => {
+      if (raf !== null) { cancelAnimationFrame(raf); raf = null; }
+      render();
+    });
+    video.addEventListener('seeked', render);
+    video.addEventListener('loadedmetadata', () => {
+      if (pendingFrac !== null) {
+        video.currentTime = pendingFrac * video.duration;
+        pendingFrac = null;
+      }
+      render();
+    });
+
+    const fracAt = (clientX) => {
+      const r = scrub.getBoundingClientRect();
+      return Math.min(1, Math.max(0, (clientX - r.left) / r.width));
+    };
+
+    const seekTo = (frac) => {
+      if (!video.src) {
+        // Not lazy-loaded yet: fetch metadata so the seek can be applied.
+        video.preload = 'metadata';
+        video.src = video.dataset.src;
+      }
+      if (video.duration > 0) video.currentTime = frac * video.duration;
+      else pendingFrac = frac;
+      paint(frac);
+    };
+
+    const showLabel = (clientX) => {
+      const frac = fracAt(clientX);
+      const d = video.duration;
+      label.textContent = d > 0 ? fmtTime(frac * d) + ' / ' + fmtTime(d) : fmtTime(0);
+      // Keep the label inside the clip at either edge.
+      const width = scrub.getBoundingClientRect().width;
+      const half = label.offsetWidth / 2 + 4;
+      label.style.left = Math.min(width - half, Math.max(half, frac * width)) + 'px';
+    };
+
+    scrub.addEventListener('pointermove', (e) => {
+      showLabel(e.clientX);
+      if (dragging) seekTo(fracAt(e.clientX));
+    });
+
+    scrub.addEventListener('pointerdown', (e) => {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      e.preventDefault();
+      dragging = true;
+      scrub.classList.add('is-scrubbing');
+      scrub.setPointerCapture(e.pointerId);
+      video.pause(); // hold to inspect a frame
+      seekTo(fracAt(e.clientX));
+      showLabel(e.clientX);
+    });
+
+    // Clips on this page always loop, so releasing simply resumes playback.
+    const endDrag = () => {
+      if (!dragging) return;
+      dragging = false;
+      scrub.classList.remove('is-scrubbing');
+      video.play().catch(() => {});
+    };
+    scrub.addEventListener('pointerup', endDrag);
+    scrub.addEventListener('pointercancel', endDrag);
+    scrub.addEventListener('lostpointercapture', endDrag);
+
+    scrub.addEventListener('keydown', (e) => {
+      const d = video.duration;
+      if (!(d > 0)) return;
+      const dir = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (!dir) return;
+      e.preventDefault();
+      const step = e.shiftKey ? 5 : 1;
+      seekTo(Math.min(1, Math.max(0, (video.currentTime + dir * step) / d)));
+    });
+  });
 
   // Compliant / Stiff tab toggles, one independent group per task.
   document.querySelectorAll('.tabs').forEach((tabs) => {
@@ -770,6 +1109,10 @@
   // Hover spotlight: unmute + zoom the hovered clip, dim its row siblings.
   // A single shared "active" reference guarantees at most one video is ever
   // unmuted at a time, even if the mouse sweeps quickly across several cards.
+  // Playback volume for unmuted clips (0–1). The recordings are loud with
+  // room noise, so they play well below full volume.
+  const CLIP_VOLUME = 0.4;
+
   let activeVideo = null;
   let activeCard = null;
 
@@ -777,7 +1120,7 @@
     if (activeVideo) activeVideo.muted = true;
     if (activeCard) {
       activeCard.classList.remove('is-hovered');
-      const scope = activeCard.closest('.row-scroll, .teaser-wrap');
+      const scope = activeCard.closest('.row-scroll, .row-fill, .teaser-wrap');
       if (scope) scope.querySelectorAll('.card').forEach((c) => c.classList.remove('is-dimmed'));
       const viewport = activeCard.closest('.row-viewport');
       if (viewport) viewport.classList.remove('is-spotlighting');
@@ -788,7 +1131,7 @@
 
   document.querySelectorAll('.card').forEach((card) => {
     const video = card.querySelector('video');
-    const scope = card.closest('.row-scroll, .teaser-wrap');
+    const scope = card.closest('.row-scroll, .row-fill, .teaser-wrap');
     const viewport = card.closest('.row-viewport');
 
     card.addEventListener('mouseenter', () => {
@@ -803,7 +1146,7 @@
       if (viewport) viewport.classList.add('is-spotlighting');
 
       video.muted = false;
-      video.volume = 1;
+      video.volume = CLIP_VOLUME;
       video.play().catch(() => {});
       activeVideo = video;
       activeCard = card;
